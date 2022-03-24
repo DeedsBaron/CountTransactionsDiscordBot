@@ -9,12 +9,13 @@ import (
 func createCommands(goBot *discordgo.Session) {
 	createSellCommand(goBot)
 	createConfirmCommand(goBot)
-	createStatCommand(goBot)
+	createStatUserCommand(goBot)
+	createStatsCommand(goBot)
 }
 
-func createStatCommand(goBot *discordgo.Session) {
+func createStatUserCommand(goBot *discordgo.Session) {
 	stat, err := goBot.ApplicationCommandCreate(config.Config.Discord.AppID, config.Config.Discord.GuildID, &discordgo.ApplicationCommand{
-		Name: "Stats",
+		Name: "Stat",
 		Type: discordgo.UserApplicationCommand,
 	})
 	if err != nil {
@@ -29,6 +30,53 @@ func createStatCommand(goBot *discordgo.Session) {
 			},
 			&discordgo.ApplicationCommandPermissions{
 				ID:         config.Config.Discord.ModeratorRoleID,
+				Type:       discordgo.ApplicationCommandPermissionTypeRole,
+				Permission: true,
+			},
+		},
+	})
+	if err != nil {
+		log.Fatalf("Cannot modify sell perm command: %v", err)
+	}
+}
+
+func createStatsCommand(goBot *discordgo.Session) {
+	sell, err := goBot.ApplicationCommandCreate(config.Config.Discord.AppID, config.Config.Discord.GuildID, &discordgo.ApplicationCommand{
+		Name:        "stats",
+		Description: "User sell buy statistics",
+		Type:        discordgo.ChatApplicationCommand,
+		Options: []*discordgo.ApplicationCommandOption{
+			&discordgo.ApplicationCommandOption{
+				Type:        3,
+				Name:        "userid",
+				Description: "User ID ",
+				Required:    true,
+			},
+		},
+	})
+	if err != nil {
+		log.Fatalf("Cannot create slash command: %v", err)
+	}
+	err = goBot.ApplicationCommandPermissionsEdit(config.Config.Discord.AppID, config.Config.Discord.GuildID, sell.ID, &discordgo.ApplicationCommandPermissionsList{
+		Permissions: []*discordgo.ApplicationCommandPermissions{
+			&discordgo.ApplicationCommandPermissions{
+				ID:         config.Config.Discord.ModeratorRoleID,
+				Type:       discordgo.ApplicationCommandPermissionTypeRole,
+				Permission: true,
+			},
+			&discordgo.ApplicationCommandPermissions{
+				ID:         config.Config.Discord.MemberRoleID,
+				Type:       discordgo.ApplicationCommandPermissionTypeRole,
+				Permission: true,
+			},
+
+			&discordgo.ApplicationCommandPermissions{
+				ID:         "953702196476792832",
+				Type:       discordgo.ApplicationCommandPermissionTypeRole,
+				Permission: true,
+			},
+			&discordgo.ApplicationCommandPermissions{
+				ID:         "950582530854228019",
 				Type:       discordgo.ApplicationCommandPermissionTypeRole,
 				Permission: true,
 			},

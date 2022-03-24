@@ -161,8 +161,33 @@ var (
 							sold   int
 							bought int
 						}{}
-						q := `SELECT selled, bought FROM sellbuyinfo WHERE usernickname = $1`
-						row := Psql.pool.QueryRow(context.Background(), q, i.Member.User.Username+"#"+i.Member.User.Discriminator)
+						q := `SELECT selled, bought FROM sellbuyinfo WHERE userid = $1`
+						row := Psql.pool.QueryRow(context.Background(), q, i.Member.User.ID)
+						if row.Scan(&res.sold, &res.bought) != nil {
+							return "User has no stats!"
+						} else {
+							return "Bouhgt: " + strconv.Itoa(res.bought) + "\nSold: " + strconv.Itoa(res.sold)
+						}
+					}(),
+				},
+			})
+			if err != nil {
+				panic(err)
+			}
+		},
+		"stats": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+			err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Flags: 1 << 6,
+					Content: func() string {
+						res := struct {
+							sold   int
+							bought int
+						}{}
+						q := `SELECT selled, bought FROM sellbuyinfo WHERE userid = $1`
+						row := Psql.pool.QueryRow(context.Background(), q, i.ApplicationCommandData().Options[0].Value)
 						if row.Scan(&res.sold, &res.bought) != nil {
 							return "User has no stats!"
 						} else {
@@ -186,7 +211,10 @@ func handlers(goBot *discordgo.Session, botIsUp chan struct{}) {
 	})
 	//memberadd
 	goBot.AddHandler(func(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
-		//addmem to database
+		q := `INSERT INTO sellbuyinfo(userid, usernickname, selled, bought)
+		VALUES ($1, $2, 0, 0);`
+		Psql.pool.Exec(context.Background(), q, m.Member.User.ID, m.Member.User.Username+"#"+m.Member.User.Discriminator)
+
 	})
 	//thread
 	//goBot.AddHandler(func(s *discordgo.Session, t *discordgo.ThreadCreate) {

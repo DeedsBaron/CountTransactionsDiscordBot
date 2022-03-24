@@ -2,8 +2,8 @@ build:
 	@echo "\033[0;32mBuilding binary...\033[m"
 	@$(MAKE) -s -C urlShortener
 
-all: build
-	@$(MAKE) run -s -C urlShortener
+all:
+	go run main.go
 inmem:
 	docker-compose build --no-cache
 	docker-compose up -d --force-recreate
