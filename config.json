@@ -2,16 +2,16 @@
   "Discord": {
     "Token"  : "",
     "BotPrefix" : "!",
-    "GuildID" : "950576903465607169",
-    "AppID" : "951942159702036504",
-    "ModeratorRoleID" : "950582967368056882",
-    "MemberRoleID" : "950728440083009567"
+    "GuildID" : "",
+    "AppID" : "",
+    "ModeratorRoleID" : "",
+    "MemberRoleID" : ""
   },
   "Postgres" : {
-    "Username" : "dbaron",
-    "Password" : "u8Np362GdF",
-    "Host" : "ovz1.j49670788.meo8n.vps.myjino.ru",
-    "Port" : "49448",
-    "Database" : "transactions"
+    "Username" : "",
+    "Password" : "",
+    "Host" : "",
+    "Port" : "",
+    "Database" : ""
   }
 }
